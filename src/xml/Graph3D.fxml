@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.VBox?>
+<?import graph3d.InputField?>
+<?import graph3d.Viewport?>
+<?import notes.TheCustomControl?>
+
+<SplitPane
+	fx:id            = "mainPane"
+	fx:controller    = "Graph3D"
+	xmlns:fx         = "http://javafx.com/fxml"
+	dividerPositions = "0.333">
+	
+	<stylesheets>
+		<URL value="@../styles/Graph3D.css"/>
+	</stylesheets>
+	
+	<items>
+		<VBox fx:id="inputContainer">
+			<InputField/>
+		</VBox>
+		<Viewport/>
+		<TheCustomControl/>
+	</items>
+
+</SplitPane>

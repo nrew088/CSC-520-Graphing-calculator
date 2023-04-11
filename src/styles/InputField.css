@@ -1,0 +1,18 @@
+InputField {
+	-fx-background-color: #00000040;
+	-fx-pref-width: 300px;
+	-fx-pref-height: 75px;
+	-fx-padding: 7.5px;
+	-fx-font-size: 18;
+}
+
+Button {
+	-fx-min-width: 60px;
+	-fx-pref-width: 60px;
+	-fx-pref-height: 60px;
+	-fx-font-size: 12;
+}
+
+TextField {
+	-fx-pref-height: 60px;
+}

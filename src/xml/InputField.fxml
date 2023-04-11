@@ -1,0 +1,17 @@
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root
+	type     = "javafx.scene.layout.HBox"
+	xmlns:fx = "http://javafx.com/fxml">
+	
+	<stylesheets>
+		<URL value="@../styles/InputField.css"/>
+	</stylesheets>
+	
+	<Button fx:id="button" onAction="#removeField">Remove</Button>
+	<TextField fx:id="textField"/> <!-- TODO: TextFlow instead for rich text? -->
+
+</fx:root>

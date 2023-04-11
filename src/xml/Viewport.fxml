@@ -1,0 +1,14 @@
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+
+<fx:root
+	type     = "javafx.scene.layout.VBox"
+	xmlns:fx = "http://javafx.com/fxml">
+	
+	<stylesheets>
+		<URL value="@../styles/Viewport.css"/>
+	</stylesheets>
+	
+	<Label>Viewport goes here</Label>
+	
+</fx:root>

@@ -1,0 +1,65 @@
+---- -------------------------- ----
+---- COMPILING A JAVAFX PROGRAM ----
+---- -------------------------- ----
+
+---- BASICS ----
+
+A: Module paths
+
+The Java compiler needs to know where to find JavaFX components to compile
+the program. You can tell it where to find them by supplying the path to the
+JavaFX lib folder in the "--module-path" command line argument. Since the
+JavaFX folder for this project is inside the project's own lib folder, the
+required command line argument is as follows:
+
+- "--module-path \"projectPath/lib/javafx-sdk-20/lib\""
+
+Remember to enclose the path string in quotes. Furthermore, the compiler also
+needs to know which JavaFX modules in this library are being used. At the very
+least, JavaFX applications (seem to?) require the control module. You can tell
+the compiler to include it, along with another.module and yet.another.module,
+with the following command line argument:
+
+- "--add-modules javafx.controls,another.module,yet.another.module"
+
+You may also need to specify any {Module B} reported in the exception dealt
+with in PITFALLS section A, or the --add-opens command might complain that the
+module cannot be found.
+
+---- PITFALLS ----
+
+A: "X does not export to module"
+
+When using certain components of the JavaFX library, the compiler may
+occasionally complain that an exception was:
+- "Caused by: java.lang.IllegalAccessError: class
+  {Package A}.{Class A}$ValueElement (in unnamed module @{Your project's
+  module ID}) cannot access class {Package B}.{Class B} (in module {Module B})
+  because module {Module B} does not export {Package B} to unnamed module
+  @{Your project's module ID}"
+
+The solution is to add the following to your JVM command line arguments:
+- "--add-opens {Module B}/{Package B}=ALL-UNNAMED"
+
+If your project as a whole resides in its own module and the error reports the
+module name in place of the ID number, you may be able to use that module name
+in place of ALL-UNNAMED. I haven't tested this.
+
+
+
+---- ---------------------- ----
+---- CUSTOM JAVAFX CONTROLS ----
+---- ---------------------- ----
+
+Custom controls MUST be placed inside a package or else the java compiler
+can't find them (it'll tell you "TheCustomControl is not a valid class").
+Package names correspond to project subfolders relative to the
+projectFolder/src directory.
+
+To set up a custom control, create a file at projectFolder/src/path/to/the/
+package/TheCustomControl.java, then see further notes provided in the files
+listed below. In this example the package is simply "notes".
+
+- /src/xml/TheCustomControl.fxml
+- /src/styles/TheCustomControl.css
+- /src/notes/TheCustomControl.java

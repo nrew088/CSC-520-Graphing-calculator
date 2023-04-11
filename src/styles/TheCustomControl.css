@@ -1,0 +1,39 @@
+/*\
+ *  Note that FXCSS is different than plain CSS. Plenty of CSS attributes
+ *  aren't implemented, but can be simulated using the proper hierarchy of
+ *  Pane subclasses in FXML. Those that are implemented must be prefixed with
+ *  "-fx-", e.g. "-fx-background-color". If your IDE doesn't recognize FXCSS
+ *  it might complain about the prefixed attribute names, but as long as you
+ *  get the result you're aiming for it's fine.
+ *  
+ *  https://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html
+\*/
+
+/*\
+ *  This styles the appearance of the Pane portion of TheCustomControl
+\*/
+TheCustomControl {
+	-fx-padding: 22.5px;
+	-fx-background-color: black; /* Many colors have explicit names */
+	-fx-pref-width: 300px; /* FXCSS only supports pixel length units. Use   */
+	-fx-pref-height: 75px; /* container hierarchies for more clever layouts */
+}
+
+/*\
+ *  This styles only Buttons that are children of TheCustomControl
+\*/
+Button {
+	-fx-foreground: #ff4060a0; /* RRGGBBAA format (32 bit color) */
+	-fx-pref-height: 30px;
+	-fx-pref-width: 80px;
+	-fx-min-width: 80px; /* Prevents collapsing when TheCustomControl would
+	                        otherwise be too thin to accommodate the Button */
+}
+
+/*\
+ *  This styles only TextFields that are children of TheCustomControl
+\*/
+TextField {
+	-fx-background: #fa2a; /* RGBA format (16 bit color) */
+	-fx-pref-height: 30px;
+}

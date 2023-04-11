@@ -1,0 +1,12 @@
+Button {
+	-fx-pref-width: 200px;
+	-fx-pref-height: 50px;
+}
+
+Label {
+	-fx-font-size: 24;
+}
+
+VBox {
+	-fx-background-color: #2040a080;
+}

@@ -1,0 +1,58 @@
+<!--
+Just like in code, FXML also needs to import any classes it uses. Take note of
+the <?...?> syntax that wraps the import statement.
+-->
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<!--
+When you use TheCustomControl in another FXML file (e.g. the main one), you
+need to include it in that file as follows:
+<?import package.name.TheCustomControl?>
+Remember that "package.name" is "notes" in this example.
+-->
+
+<!--
+type ........ Must match the class extended from in TheCustomControl.java.
+	 ........ Must use the fully-qualified class name in this FXML file;
+	 ........ doesn't work with only the class name. Note that the class
+	 ........ doesn't need to be imported in TheCustomControl.fxml.
+
+xmlns:fx .... Any XML always needs a namespace.
+-->
+<fx:root
+	type     = "javafx.scene.layout.HBox"
+	xmlns:fx = "http://javafx.com/fxml">
+	
+	<!--
+	Stylesheets are optional, but very useful. Note the @ symbol. The string
+	is a path relative to the location of this file.
+	-->
+	<stylesheets>
+		<URL value="@../styles/TheCustomControl.css"/>
+	</stylesheets>
+	
+	<!--
+	Set fx:id as a matching member variable name inside TheCustomControl
+	in order to reference it in code.
+	-->
+	<Button fx:id="theButton" onAction="#buttonAction">
+		Since Button is a descendant of Labeled, whose @DefaultProperty is
+		"text", you can put displayable text between its opening and
+		closing tags without wrapping it in the text property tag - which is
+		what you would need to do for text in controls that aren't descendants
+		of Labeled.
+		
+		This text specifically will be overwritten inside
+		TheCustomControl.initialize() when theButton.setText() is called.
+		Some things are easier to set up in FXML and others are easier in
+		initialize().
+	</Button>
+	
+	<!--
+	Singular tags are also supported in FXML. Note the /> at the end.
+	-->
+	<TextField fx:id="theTextField"/>
+	
+</fx:root>
