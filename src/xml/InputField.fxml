@@ -12,6 +12,6 @@
 	</stylesheets>
 	
 	<Button fx:id="button" onAction="#removeField">Remove</Button>
-	<TextField fx:id="textField"/> <!-- TODO: TextFlow instead for rich text? -->
+	<TextField fx:id="textField" onAction="#initRender"/> <!-- TODO: TextFlow instead for rich text? -->
 
 </fx:root>

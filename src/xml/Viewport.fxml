@@ -1,5 +1,4 @@
 <?import java.net.URL?>
-<?import javafx.scene.control.Label?>
 
 <fx:root
 	type     = "javafx.scene.layout.VBox"
@@ -8,7 +7,4 @@
 	<stylesheets>
 		<URL value="@../styles/Viewport.css"/>
 	</stylesheets>
-	
-	<Label>Viewport goes here</Label>
-	
 </fx:root>

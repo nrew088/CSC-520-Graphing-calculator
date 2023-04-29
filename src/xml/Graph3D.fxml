@@ -10,7 +10,7 @@
 
 <SplitPane
 	fx:id            = "mainPane"
-	fx:controller    = "Graph3D"
+	fx:controller    = "graph3d.Graph3D"
 	xmlns:fx         = "http://javafx.com/fxml"
 	dividerPositions = "0.333">
 	
@@ -21,9 +21,10 @@
 	<items>
 		<VBox fx:id="inputContainer">
 			<InputField/>
+			<InputField/>
+			<InputField/>
 		</VBox>
-		<Viewport/>
-		<TheCustomControl/>
+		<Viewport fx:id="graphViewport"/>
 	</items>
 
 </SplitPane>
