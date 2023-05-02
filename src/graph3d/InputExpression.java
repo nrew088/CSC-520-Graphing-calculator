@@ -1,11 +1,16 @@
 package graph3d;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.mariuszgromada.math.mxparser.Expression;
 import org.mariuszgromada.math.mxparser.Function;
 
 public class InputExpression {
@@ -15,105 +20,101 @@ public class InputExpression {
 	//               that are not in the parameter list
 	// Variables:    All names that are currently in use
 	
-	String name;
-	TreeSet<String> parameters = new TreeSet<String>();
-	LinkedList<String> dependencies = new LinkedList<String>();
-	Function parsedFunction;
-	// Expression parsedExpression;
-
-	public static TreeSet<String> variables = new TreeSet<String>();
+	public String name;
+	public LinkedList<String> dependencies = new LinkedList<String>();
+	public Boolean isRenderable = false;
+	public RenderGrid grid = new RenderGrid(50);
 	
-	final public static TreeSet<String> specialVars = new TreeSet<String>
-		(Arrays.asList("x", "y", "z"));
+	public TreeSet<String> parameters = new TreeSet<String>();
 	
-	// TODO: allow empty expression and fix update() code to handle it
-	final private Pattern exprPat = Pattern.compile
-		("(?<v>[a-zA-Z_]+)\\s*\\(?(?<p>[a-zA-Z_,]+)*\\)?\\s*=\\s*(?<e>.*)");
+	// public static TreeMap<String,InputField> variables =
+		// new TreeMap<String,InputField>();
 	
-	public InputExpression() {
-		
-	}
+	public static final LinkedList<String> specialVars =
+		new LinkedList<String>(Arrays.asList("x", "y", "z"));
 	
 	// 1: Evaluate all InputExpressions referenced in the dependencies
 	// 2: Substitute them by name and figure out the rest of step 2
-	public double evaluate() {
-		return 1;
+	public double evaluate(Function f, TreeMap<String,Double> known) {
+		Double knownVal = known.get(name);
+		// If the current InputExpression's "known" value is null, i.e.
+		// undefined, set its "known" value as NaN so that the key-value pair
+		// is present in the map.
+		if(knownVal == null)
+			known.put(name, Double.NaN);
+		else
+		// If the current InputExpression's "known" value is NaN, then a prior
+		// recursion is evaluating it and we have a cyclic reference. Throw a
+		// CyclicDefinitionException (once it's implemented).
+		if(knownVal == Double.NaN)
+			throw new RuntimeException("Cyclic reference detected");
+		
+		for(String d : dependencies) {
+			Double depVal = known.get(d);
+			if(depVal == null) {
+				depVal = InputField.definitions.get(d).expression.evaluate(f, known);
+				known.put(d, depVal);
+			}
+		}
+		
+		// Now that all dependencies are "known", calculate name's value and
+		// return it
+		double myVal;
+		
+		LinkedList<String> knownVals = new LinkedList<>();
+		for(String d : dependencies)
+			knownVals.add("" + known.get(d));
+		
+		// Move update into InputField?
+		InputField.definitions.get(name).update();
+		
+		Expression e = new Expression(
+			name + "(" + String.join(",", knownVals) + ")", grid.func
+		);
+		myVal = e.calculate();
+		return myVal;
 	}
 	
 	// Update dependencies and other internal data, but don't evaluate
-	public void update(String rawExpr) {
-		// Example: f(x,y) = x^2 + y^2
-		// Example: z = x^2 + y^2
-		System.out.println(rawExpr);
+	public void update(String rawExpr) {}
+	
+	
+	
+	// public void setName(String newName) {
+	// 	// Add to exposed variables list if new name is neither null nor empty
+	// 	if(newName != null) {
+	// 		if(newName.length() > 0) {
+	// 			System.out.println("Adding " + newName);
+	// 			// InputField.definitions.put(name = newName, )
+	// 			variables.put(name = newName, this);
+	// 		}
+	// 	}
 		
-		Matcher m = exprPat.matcher(rawExpr);
+	// 	// Remove from exposed variables list if new name is null
+	// 	else {
+	// 		System.out.println("Removing " + name);
+	// 		variables.remove(name);
+	// 		name = newName;
+	// 	}
+	// }
+	
+	
+	
+	public void updateDependencies(String newExpr) {
+		dependencies.clear();
 		
-		if(m.matches()) {
-			System.out.println("Match success!");
-			System.out.println("Name   : " + m.group("v"));
-			System.out.println("Params : " + m.group("p"));
-			System.out.println("Expr   : " + m.group("e"));
-			
-			String
-				inName   = m.group("v"),
-				inParams = m.group("p"),
-				inExpr   = m.group("e");
-			// Hooray!
-			
-			// Update the list of variables visible everywhere
-			if(inName != name) {
-				if(name != null && variables.contains(name))
-					variables.remove(name);
-				variables.add(name = inName);
-			}
-			
-			parameters = new TreeSet<String>(Arrays.asList(
-				inParams == null ? new String[]{} : inParams.split(",")
-			));
-			
-			// Reassess dependencies
-			dependencies.clear();
-			
-			// 1: Parameter dependenciess
-			for(String p : parameters)
-				dependencies.add(p);
-			
-			// 2: Special variable dependencies
-			for(String v : specialVars)
-			if (inExpr.contains(v)    )
-				dependencies.add(v);
-			
-			// 3: Referenced variable dependencies
-			for(String n : variables)
-			if (inExpr.contains(n)  )
-				dependencies.add(n);
-			
-			System.out.println("Name         : " + name);
-			System.out.println("Parameters   : " + parameters);
-			System.out.println("Dependencies : " + dependencies);
-			System.out.println("Expression   : " + inExpr);
-			System.out.println("Variables    : " + variables);
-			
-			String moddedExpr = inExpr;
-			int counter = 1;
-			for(String d : dependencies)
-				moddedExpr = moddedExpr.replaceAll(d, "par(" + counter++ + ")");
-			
-			parsedFunction = new Function(name + "(...) = " + moddedExpr);
-			
-			System.out.println("mXparser function expression: " + parsedFunction.getFunctionExpressionString());
-			
-			// String exprTest = name + "(2,2)";
-			// Expression test = new Expression(exprTest, parsedFunction);
-			// System.out.println("mXparser result(2,2): " + test.calculate());
-			// test.setExpressionString(name + "(3,3)");
-			// System.out.println("mXparser result(3,3): " + test.calculate());
-			// test.
-			// System.out.println(getScene());
-		} else {
-			// Oh no... :'(
-			// (this is where we trigger the error dialog)
-			System.out.println("Invalid expression");
-		}
+		for(String p : parameters)       // 1: Parameters
+			dependencies.add(p);
+		
+		for(String v : specialVars)      // 2: Special variables
+		if (newExpr.contains(v)   )
+			dependencies.add(v);
+		
+		TreeMap<String,InputField> fields = InputField.definitions;
+		for(String n : fields.keySet())  // 3: Referenced variables
+		if (newExpr.contains(n) )
+			dependencies.add(n);
+		
+		// Ignore variable names that aren't defined anywhere?
 	}
 }

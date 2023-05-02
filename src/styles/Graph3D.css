@@ -10,3 +10,7 @@ Label {
 VBox {
 	-fx-background-color: #2040a080;
 }
+
+#rootVBox {
+	-fx-min-height: 1000px;
+}
