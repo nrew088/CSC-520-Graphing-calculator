@@ -1,15 +1,9 @@
 package graph3d;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.mariuszgromada.math.mxparser.Expression;
 import org.mariuszgromada.math.mxparser.Function;
 
@@ -80,6 +74,7 @@ public class InputExpression {
 	
 	
 	
+	// TODO: Restore this here or keep implementation in InputField?
 	// public void setName(String newName) {
 	// 	// Add to exposed variables list if new name is neither null nor empty
 	// 	if(newName != null) {

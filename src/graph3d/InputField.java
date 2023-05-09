@@ -7,13 +7,14 @@ package graph3d;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +26,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 public class InputField 
 extends HBox implements Initializable {
@@ -37,11 +39,13 @@ extends HBox implements Initializable {
 	
 	InputExpression expression = new InputExpression();
 	
-	static public Iterator<Node> fields;
+	static public int fieldIdx = 0;
 	
 	// TODO: allow empty expression and fix update() code to handle it
 	private final Pattern exprPat = Pattern.compile
 		("(?<v>[a-zA-Z_]+)\\s*\\(?(?<p>[a-zA-Z_,]+)*\\)?\\s*=\\s*(?<e>.*)");
+	
+	// z(x,y) = x^2 + y^2
 	
 	public InputField() throws Exception {
 		super();
@@ -57,13 +61,73 @@ extends HBox implements Initializable {
 	public void initialize(URL u, ResourceBundle rb) {
 		HBox.setHgrow(button, Priority.NEVER);
 		HBox.setHgrow(textField, Priority.ALWAYS);
+		textField.focusedProperty().addListener(this::onFocus);
+		textField.setOnKeyPressed(this::onPress);
 		textField.setOnKeyReleased(this::onRelease);
 		released = true;
 	}
 	
+	public void onFocus(ObservableValue<? extends Boolean> o, Boolean oldVal, Boolean NewVal) {
+		VBox inputContainer = (VBox) getScene().lookup("#inputContainer");
+		ObservableList<Node> children = inputContainer.getChildren();
+		fieldIdx = children.indexOf(this);
+	}
+	
+	public void onPress(KeyEvent event) {
+		try {
+			switch(event.getCode()) {
+				case UP         : navigateUp()   ; break ;
+				case DOWN       : navigateDown() ; break ;
+				case BACK_SPACE : maybeDelete()  ; break ;
+				default:;
+			}
+		} catch (Exception e) {}
+	}
+	
+	private void navigateUp() {
+		VBox inputContainer = (VBox) getScene().lookup("#inputContainer");
+		ObservableList<Node> children = inputContainer.getChildren();
+		if(fieldIdx > 0) {
+			fieldIdx--;
+			InputField prev = (InputField) children.get(fieldIdx);
+			prev.textField.requestFocus();
+		}
+	}
+	
+	private void navigateDown() throws Exception {
+		VBox inputContainer = (VBox) getScene().lookup("#inputContainer");
+		ObservableList<Node> children = inputContainer.getChildren();
+		fieldIdx++;
+		
+		if(children.size() <= fieldIdx)
+			children.add(new InputField());
+		
+		InputField next = (InputField) inputContainer.getChildren().get(fieldIdx);
+		next.textField.requestFocus();
+	}
+	
+	private void maybeDelete() throws Exception {
+		if( textField.getLength() == 0) {
+			VBox inputContainer = (VBox) getScene().lookup("#inputContainer");
+			ObservableList<Node> children = inputContainer.getChildren();
+			
+			int prevIdx = children.indexOf(this)-1;
+			
+			// requestFocus first to avoid an exception
+			((InputField)children.get(prevIdx)).textField.requestFocus();
+			children.remove(this);
+		}
+	}
+	
 	// Event handlers referenced in FXML must be public!!!!!!!!!!!!!!!!!!!!!!!
 	public void removeField(ActionEvent event) {
-		System.out.println("TODO: Implement removeField");
+		VBox inputContainer = (VBox) getScene().lookup("#inputContainer");
+		ObservableList<Node> children = inputContainer.getChildren();
+		if(children.size() > 1) {
+			children.remove(this);
+			fieldIdx = Math.min(children.size()-1, fieldIdx);
+			((InputField)children.get(fieldIdx)).textField.requestFocus();
+		}
 	}
 	
 	public void initRender(ActionEvent event) {

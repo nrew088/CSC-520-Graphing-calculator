@@ -1,10 +1,8 @@
 package graph3d;
 
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.ResourceBundle;
 
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -23,13 +21,12 @@ import javafx.scene.robot.Robot;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import graph3d.AxisWall;
 
 public class Viewport extends VBox implements Initializable {
 	
 	private Point2D origin, p1;
 	
-	private double scale;
+	// private double scale; // TODO
 	private Robot mouseAnchor = new Robot();
 	private PerspectiveCamera cam = new PerspectiveCamera(true);
 	private Group root3D = new Group();
@@ -37,8 +34,8 @@ public class Viewport extends VBox implements Initializable {
 	// Rotation pivot points are the inverse of the camera's default
 	// translation. Remember to update yaw and pitch when moving the camera?
 	private Rotate
-		yaw   = new Rotate(0,0,0,2,Rotate.Y_AXIS),
-		pitch = new Rotate(0,0,0,2,Rotate.X_AXIS);
+		yaw   = new Rotate(0,0,0,2.125,Rotate.Y_AXIS),
+		pitch = new Rotate(0,0,0,2.125,Rotate.X_AXIS);
 	
 	public Viewport() throws Exception {
 		super();
@@ -53,7 +50,7 @@ public class Viewport extends VBox implements Initializable {
 		SubScene subScene = new SubScene
 			(root3D, 0, 0, true, SceneAntialiasing.BALANCED);
 		subScene.setCamera(cam);
-		getChildren().add(subScene);
+		getChildren().addAll(subScene);
 		
 		setOnMousePressed(this::beginRotation);
 		setOnMouseDragged(this::rotateCamera);
@@ -63,7 +60,7 @@ public class Viewport extends VBox implements Initializable {
 		subScene.heightProperty().bind(heightProperty());
 		subScene.setManaged(false);
 		
-		cam.setTranslateZ(-2);
+		cam.setTranslateZ(-2.125);
 		cam.getTransforms().addAll(yaw, pitch);
 	}
 	
@@ -73,78 +70,21 @@ public class Viewport extends VBox implements Initializable {
 	}
 	
 	public Group getAxes(double scale){
-    	Cylinder axisX = new Cylinder(0.005, 1);
-    	axisX.getTransforms().addAll(new Rotate(90, Rotate.Z_AXIS), new Translate(0, 0, 0));
-    	axisX.setMaterial(new PhongMaterial(Color.RED));
-
-    	Cylinder axisY = new Cylinder(0.005, 1);
-    	axisY.getTransforms().addAll(new Rotate(-90, Rotate.X_AXIS), new Translate(0, 0, 0));
-    	axisY.setMaterial(new PhongMaterial(Color.GREEN));
-
-    	Cylinder axisZ = new Cylinder(0.005, 1);
-    	axisZ.getTransforms().addAll(new Translate(0, 0, 0));
-    	axisZ.setMaterial(new PhongMaterial(Color.BLUE));
-
-        Group group = new Group(axisX, axisY, axisZ);
-        // group.getTransforms().add(new Scale(scale, scale, scale));
-        return group;
-	}
-	
-	// TODO: declare size as int?
-	private Group createWalls(double size) {
-		// Color wallColor = Color.rgb(255,255,255,0.2);
-		LinkedList<AxisWall> walls = new LinkedList<AxisWall>();
-		AxisWall w;
+		Cylinder axisX = new Cylinder(0.005, 1);
+		axisX.getTransforms().addAll(new Rotate(90, Rotate.Z_AXIS));
+		axisX.setMaterial(new PhongMaterial(Color.RED));
 		
-		// Back face
-		// w = new AxisWall(size);
-		// w.setTranslateX(-0.5*size);
-		// w.setTranslateY(-0.5*size);
-		// w.setTranslateZ(0.5*size);
-		// walls.add(w);
+		Cylinder axisY = new Cylinder(0.005, 1);
+		axisY.getTransforms().addAll(new Rotate(-90, Rotate.X_AXIS));
+		axisY.setMaterial(new PhongMaterial(Color.GREEN));
 		
-		// // Bottom face
-		// w = new AxisWall(size);
-		// w.setTranslateX(-0.5*size);
-		// w.setTranslateY(0);
-		// w.setRotationAxis(Rotate.X_AXIS);
-		// w.setRotate(90);
-		// walls.add(w);
+		Cylinder axisZ = new Cylinder(0.005, 1);
+		axisZ.getTransforms().addAll(new Translate(0, 0, 0));
+		axisZ.setMaterial(new PhongMaterial(Color.BLUE));
 		
-		// // Right face
-		// w = new AxisWall(size);
-		// w.setTranslateX(-1*size);
-		// w.setTranslateY(-0.5*size);
-		// w.setRotationAxis(Rotate.Y_AXIS);
-		// w.setRotate(90);
-		// walls.add(w);
+		Group group = new Group(axisX, axisY, axisZ);
 		
-		// // Left face
-		// w = new AxisWall(size);
-		// w.setTranslateX(0);
-		// w.setTranslateY(-0.5*size);
-		// w.setRotationAxis(Rotate.Y_AXIS);
-		// w.setRotate(90);
-		// walls.add(w);
-		
-		// // Top face
-		// w = new AxisWall(size);
-		// w.setTranslateX(-0.5*size);
-		// w.setTranslateY(-1*size);
-		// w.setRotationAxis(Rotate.X_AXIS);
-		// w.setRotate(90);
-		// walls.add(w);
-		
-		// // Front face
-		// w = new AxisWall(size);
-		// w.setTranslateX(-0.5*size);
-		// w.setTranslateY(-0.5*size);
-		// w.setTranslateZ(-0.5*size);
-		// walls.add(w);
-		
-		Group wallGroup = new Group();
-		wallGroup.getChildren().addAll(walls);
-		return wallGroup;
+		return group;
 	}
 	
 	private void beginRotation(MouseEvent event) {
@@ -159,17 +99,28 @@ public class Viewport extends VBox implements Initializable {
 		
 		// Need to take floor of width and height because for odd-numbered
 		// sizes x and y are non-integers.
-		mouseAnchor.mouseMove(p1 = new Point2D(
+		p1 = new Point2D(
 			vpBounds.getMinX() + Math.floor(0.5*vpBounds.getWidth ()),
 			vpBounds.getMinY() + Math.floor(0.5*vpBounds.getHeight())
-		));
+		);
+		mouseAnchor.mouseMove(p1);
 	}
 	
 	private void rotateCamera(MouseEvent event) {
 		Point2D dp = new Point2D
 			(event.getScreenX(), event.getScreenY()).subtract(p1);
-		yaw  .setAngle(yaw  .getAngle()+0.3*dp.getX());
-		pitch.setAngle(pitch.getAngle()-0.3*dp.getY());
+		
+		double dTheta = 0.3*dp.getX(), dPhi = -0.3*dp.getY();
+		
+		if(dTheta != 0.0)
+			yaw.setAngle(yaw.getAngle()+dTheta);
+		
+		if(pitch.getAngle() <  90.0 && dPhi > 0.0)
+			pitch.setAngle(Math.min(pitch.getAngle()+dPhi,  90.0));
+		else
+		if(pitch.getAngle() > -90.0 && dPhi < 0.0)
+			pitch.setAngle(Math.max(pitch.getAngle()+dPhi, -90.0));
+		
 		mouseAnchor.mouseMove(p1);
 	}
 	

@@ -23,7 +23,7 @@ public class RenderGrid extends MeshView {
 		super();
 		regenerate(res);
 		setMesh(mesh);
-		setMaterial(new PhongMaterial(Color.RED));
+		setMaterial(new PhongMaterial(Color.RED.deriveColor(0, 1, 1, 0.75)));
 		setCullFace(CullFace.NONE);
 	}
 	
@@ -33,10 +33,6 @@ public class RenderGrid extends MeshView {
 	}
 	
 	public void setFunction(String name, String expr, String... deps) {
-		// System.out.println("RenderGrid setFunction");
-		// System.out.println("name: " + name);
-		// System.out.println("expr: " + expr);
-		// System.out.println("deps: " + String.join(", ", deps));
 		func = new Function(name, expr, deps);
 		funcArgs = deps;
 		update();
@@ -84,18 +80,20 @@ public class RenderGrid extends MeshView {
 		Expression e = new Expression("", func);
 		TreeMap<String,Double> knownVals = new TreeMap<>(){};
 		
+		// Thread workThread = new Thread();
+		
 		for(int i = 0; i < coords.size(); i += 3) {
 			float
-				x = coords.get(i+0), // JavaFX and the graph use different
-				y = coords.get(i+2), // coordinate systems, so we transform
-				z = coords.get(i+1); // the space by how we get array values
+				x = coords.get(i+0),    // JavaFX and the graph use different
+				y = coords.get(i+2);//, // coordinate systems; we can transform
+				// z = coords.get(i+1); // the space by how we get array values
 			
 			LinkedList<String> argList = new LinkedList<>();
 			for(String a : funcArgs) {
 				double theValue;
 				switch(a) {
-					case "x": theValue = y; break;
-					case "y": theValue = x; break;
+					case "x": theValue = x; break;
+					case "y": theValue = y; break;
 					
 					// For now assume z is independent
 					case "z": theValue = 0f; break;
@@ -115,7 +113,8 @@ public class RenderGrid extends MeshView {
 				fName + "(" + String.join(",", argList) + ")"
 			);
 			
-			coords.set(i+1, -(float)e.calculate()); // i+1 is the index for z
+			// i+1 is the index for z, and in JavaFX down is positive
+			coords.set(i+1, (float)-e.calculate());
 		}
 	}
 }

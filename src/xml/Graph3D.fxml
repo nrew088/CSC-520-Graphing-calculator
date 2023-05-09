@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import graph3d.InputField?>
 <?import graph3d.Viewport?>
-<?import notes.TheCustomControl?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>

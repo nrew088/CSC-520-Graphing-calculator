@@ -1,0 +1,4 @@
+module graph3d {
+	// requires MathParser.org.mXparser;
+	requires transitive javafx.controls;
+}

@@ -4,30 +4,18 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
 
-// import lib.out.MEPclasses.com.expression.parser.Parser;
-import org.mariuszgromada.math.mxparser.Function;
 import org.mariuszgromada.math.mxparser.License;
-import org.mariuszgromada.math.mxparser.Expression;
-import org.mariuszgromada.math.mxparser.mXparser;
 
 
 public class Graph3D extends Application implements Initializable {
@@ -61,6 +49,11 @@ public class Graph3D extends Application implements Initializable {
 	public void initialize(URL a, ResourceBundle b) {
 		SplitPane.setResizableWithParent(inputContainer, false);
 		mainDivider = mainPane.getDividers().get(0);
-		InputField.fields = inputContainer.getChildren().iterator();
+		// InputField.fields = inputContainer.getChildren();
+		Platform.runLater(() -> {
+			InputField firstField = (InputField) inputContainer.getChildren()
+				.get(InputField.fieldIdx);
+			firstField.textField.requestFocus();
+		});
 	}
 }
