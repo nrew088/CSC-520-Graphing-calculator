@@ -16,8 +16,7 @@ public class LoginWindow extends Stage {
 
     public LoginWindow() {
         setTitle("Login/Logout Window");
-       
-        
+          
         // Create the grid pane for the login/logout window
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -57,10 +56,7 @@ public class LoginWindow extends Stage {
 
                 // Close the login window
                 close();
-            } else {
-                // Display an error message
-                // ...
-            }
+            } 
         });
         
         // Add the UI elements to the grid pane
